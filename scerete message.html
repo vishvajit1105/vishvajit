@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Samurai Scroll Cinematic</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            font-family: 'Yuji Syuku', serif;
+        }
+
+        /* ================= PAGE BASE ================= */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ================= PAGE 1 ================= */
+        #page1 {
+            background: black;
+        }
+
+        .mat {
+            width: 100%;
+            height: 100%;
+            background: url('mat.jpg') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* SCROLL IMAGE */
+        .scroll-img {
+            width: 500px;
+            cursor: pointer;
+            transition: transform 1s ease;
+        }
+
+        .scroll-img.open {
+            transform: translateY(200px) scaleY(2);
+        }
+
+        /* ================= PAGE 2 ================= */
+        #page2 {
+            display: none;
+            background: black;
+        }
+
+        .scroll-page {
+            width: 80%;
+            height: 85%;
+            background: url('paper.jpg') center/cover no-repeat;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.7);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        /* CANVAS */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* BLOOD IMAGE */
+        .blood {
+            position: absolute;
+            width: 80%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .blood.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.9;
+        }
+
+        /* ================= PAGE 3 ================= */
+        #page3 {
+            display: none;
+            background: black;
+            color: red;
+            font-size: 60px;
+            letter-spacing: 10px;
+            animation: flicker 1s infinite;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PAGE 1 -->
+    <div id="page1" class="page">
+        <div class="mat">
+            <img src="scroll.png" class="scroll-img" id="scrollImg">
+        </div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div id="page2" class="page">
+        <div class="scroll-page" id="scrollPage">
+            <canvas id="canvas"></canvas>
+            <img src="F41AE079-E3EE-4166-86FB-A67FD8D5257A.png" class="blood" id="blood">
+        </div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div id="page3" class="page">
+        YOU NEED TO BE MORE CAUTIOUS
+    </div>
+
+    <script>
+        const scrollImg = document.getElementById("scrollImg");
+        const page1 = document.getElementById("page1");
+        const page2 = document.getElementById("page2");
+        const page3 = document.getElementById("page3");
+
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let stage = 0;
+
+        /* ================= PAGE 1 ================= */
+        scrollImg.onclick = () => {
+            scrollImg.classList.add("open");
+
+            setTimeout(() => {
+                page1.style.display = "none";
+                page2.style.display = "flex";
+                resizeCanvas();
+            }, 1200);
+        };
+
+        /* ================= CANVAS ================= */
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.onresize = resizeCanvas;
+
+        /* ================= WRITING ================= */
+        function writeText(text, x, y, spacing = 32, callback) {
+            let i = 0;
+
+            function draw() {
+                if (i < text.length) {
+                    ctx.font = "50px 'Yuji Syuku'";
+                    ctx.fillStyle = "black";
+                    ctx.fillText(text[i], x + i * spacing, y);
+                    i++;
+                    setTimeout(draw, 120);
+                } else if (callback) callback();
+            }
+
+            draw();
+        }
+
+        /* ================= PAGE 2 ================= */
+        document.getElementById("scrollPage").onclick = () => {
+            if (stage === 0) {
+                writeText("WELCOME SAMURAI", 300, 180);
+                stage++;
+            }
+            else if (stage === 1) {
+                writeText("WATCH YOUR BACK BOY!!!", 25`0, 280, 32, () => {
+                    document.getElementById("blood").classList.add("show");
+                });
+                stage++;
+            }
+            else if (stage === 2) {
+                page2.style.display = "none";
+                page3.style.display = "flex";
+            }
+        };
+    </script>
+
+</body>
+
+</html>
